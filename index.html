@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>목차 비교 분석</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; font-weight: 700; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .content { padding: 30px; }
+        .input-section { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
+        .input-box { background: #f8f9fa; border-radius: 12px; padding: 20px; border: 2px solid #e9ecef; transition: border-color 0.3s; }
+        .input-box:focus-within { border-color: #4facfe; }
+        .input-title { font-size: 1.1em; font-weight: 600; margin-bottom: 12px; color: #495057; display: flex; align-items: center; gap: 8px; }
+        .textarea { width: 100%; height: 200px; padding: 14px; border: 2px solid #dee2e6; border-radius: 8px; font-family: 'Pretendard Variable', Pretendard, monospace; font-size: 13px; line-height: 1.5; resize: vertical; outline: none; transition: border-color 0.3s; }
+        .textarea:focus { border-color: #4facfe; box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1); }
+        .count { margin-top: 8px; font-size: 0.85em; color: #6c757d; font-weight: 500; }
+        .compare-section { text-align: center; margin-bottom: 30px; }
+        .compare-btn { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none; padding: 16px 40px; border-radius: 25px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3); }
+        .compare-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(79, 172, 254, 0.4); }
+        .compare-btn:disabled { background: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }
+        .results { display: none; }
+        .results.show { display: block; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .controls { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px 20px; border-radius: 12px; border: 1px solid #dee2e6; }
+        .filter-group { display: flex; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .filter-btn { padding: 10px 20px; border: none; background: white; color: #6c757d; cursor: pointer; font-weight: 500; transition: all 0.3s; font-size: 0.9em; }
+        .filter-btn.active { background: #4facfe; color: white; }
+        .filter-btn:hover:not(.active) { background: #f8f9fa; }
+        .summary-stats { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 0 auto; flex: 1; max-width: 600px; }
+        .stat-card { background: white; padding: 12px 16px; border-radius: 10px; text-align: center; border-left: 4px solid; box-shadow: 0 3px 10px rgba(0,0,0,0.08); transition: transform 0.3s; min-width: 80px; flex: 1; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card.total { border-left-color: #007bff; }
+        .stat-card.added { border-left-color: #28a745; }
+        .stat-card.deleted { border-left-color: #dc3545; }
+        .stat-card.modified { border-left-color: #ffc107; }
+        .stat-card.urgent { border-left-color: #dc3545; background: #fff5f5; }
+        .stat-number { font-size: 1.6em; font-weight: 700; margin-bottom: 3px; color: #495057; }
+        .stat-label { font-size: 0.75em; color: #6c757d; font-weight: 500; }
+        .copy-btn { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 500; transition: all 0.3s; font-size: 0.9em; }
+        .copy-btn:hover { background: #218838; transform: translateY(-1px); }
+        .results-list { max-height: 70vh; overflow-y: auto; padding-right: 8px; }
+        .results-list::-webkit-scrollbar { width: 6px; }
+        .results-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+        .results-list::-webkit-scrollbar-thumb { background: #4facfe; border-radius: 8px; }
+        .result-item { margin-bottom: 15px; border-radius: 8px; overflow: hidden; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; background: white; }
+        .result-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .result-item.added { border-left: 3px solid #28a745; }
+        .result-item.deleted { border-left: 3px solid #dc3545; }
+        .result-item.modified { border-left: 3px solid #ffc107; }
+        .result-item.page-changed { border-left: 3px solid #007bff; }
+        .result-item.unchanged { border-left: 3px solid #6c757d; }
+        .result-header { padding: 10px 18px; font-weight: 600; font-size: 1em; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; color: #2c3e50; }
+        .result-body { padding: 15px 18px; background: white; }
+        .change-box { margin-bottom: 16px; padding: 16px 18px; border-radius: 6px; font-family: 'Pretendard Variable', Pretendard, sans-serif; font-size: 14px; line-height: 1.5; font-weight: 500; color: #1a1a1a; border: 2px solid; letter-spacing: -0.02em; }
+        .change-box:last-child { margin-bottom: 0; }
+        .change-box.old { background: #ffffff; border-color: #ff4444; }
+        .change-box.new { background: #ffffff; border-color: #44aa44; }
+        .change-box.info { background: #ffffff; border-color: #4488ff; margin-top: 16px; }
+        .change-box.same { background: #ffffff; border-color: #999999; }
+        .change-label { font-weight: 600; margin-right: 8px; font-size: 13px; color: #2c2c2c; letter-spacing: -0.01em; }
+        .original-text { font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #1a1a1a; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; display: inline-block; border: 1px solid #e9ecef; letter-spacing: -0.015em; line-height: 1.4; }
+        .change-tags { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .change-tag { background: #2c3e50; color: #ffffff; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; border: none; box-shadow: 0 2px 4px rgba(44, 62, 80, 0.3); letter-spacing: -0.01em; }
+        .urgent-badge { background: #e74c3c; color: white; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3); letter-spacing: -0.01em; }
+        .no-results { text-align: center; padding: 60px 20px; color: #6c757d; }
+        .no-results-icon { font-size: 3em; margin-bottom: 15px; }
+        .no-results-title { font-size: 1.3em; font-weight: 600; margin-bottom: 8px; }
+        .tips { background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); padding: 25px; border-radius: 12px; margin-top: 30px; border: 1px solid #bbdefb; }
+        .tips h4 { color: #1565c0; font-size: 1.1em; margin-bottom: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .tip-item { display: flex; align-items: flex-start; gap: 8px; color: #1976d2; font-weight: 400; font-size: 0.9em; }
+        .tip-icon { color: #4facfe; font-weight: 600; }
+        @media (max-width: 768px) { .input-section { grid-template-columns: 1fr; gap: 20px; } .controls { flex-direction: column; gap: 15px; } .summary-stats { max-width: 100%; } .stat-card { min-width: 70px; } .tips-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 목차 비교 분석</h1>
+            <p>HWP/PDF 목차 변경사항을 편집자 수준으로 정밀 분석합니다</p>
+        </div>
+        <div class="content">
+            <div class="input-section">
+                <div class="input-box">
+                    <div class="input-title">📄 기존 목차</div>
+                    <textarea id="oldTOC" class="textarea" placeholder="기존 목차를 여기에 붙여넣어주세요.
+
+예시:
+제1장 서론 ........................... 1
+제2장 이론적 배경 .................... 15
+  2.1 선행연구 ....................... 16
+  2.2 연구모형 ....................... 25
+제3장 연구방법 ....................... 35"></textarea>
+                    <div class="count" id="oldCount">0줄</div>
+                </div>
+                <div class="input-box">
+                    <div class="input-title">📝 새로운 목차</div>
+                    <textarea id="newTOC" class="textarea" placeholder="새로운 목차를 여기에 붙여넣어주세요.
+
+예시:
+제1장 서론 ........................... 1
+제2장 이론적 배경 및 선행연구 ........ 15
+  2.1 선행연구 검토 .................. 16
+  2.2 연구모형 설정 .................. 25
+제3장 연구방법론 ..................... 35
+제4장 연구결과 ....................... 50"></textarea>
+                    <div class="count" id="newCount">0줄</div>
+                </div>
+            </div>
+            <div class="compare-section">
+                <button class="compare-btn" id="compareBtn">🔍 목차 비교 분석 시작</button>
+            </div>
+            <div class="results" id="results">
+                <div class="controls">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="changes">변경사항</button>
+                        <button class="filter-btn" data-filter="all">전체</button>
+                        <button class="filter-btn" data-filter="urgent">긴급검토</button>
+                    </div>
+                    <div class="summary-stats">
+                        <div class="stat-card total"><div class="stat-number" id="totalCount">0</div><div class="stat-label">총 항목</div></div>
+                        <div class="stat-card added"><div class="stat-number" id="addedCount">0</div><div class="stat-label">➕ 추가</div></div>
+                        <div class="stat-card deleted"><div class="stat-number" id="deletedCount">0</div><div class="stat-label">➖ 삭제</div></div>
+                        <div class="stat-card modified"><div class="stat-number" id="modifiedCount">0</div><div class="stat-label">✏️ 수정</div></div>
+                        <div class="stat-card urgent"><div class="stat-number" id="urgentCount">0</div><div class="stat-label">🚨 긴급</div></div>
+                    </div>
+                    <button class="copy-btn" id="copyBtn">📋 결과 복사</button>
+                </div>
+                <div class="results-list" id="resultsList"></div>
+            </div>
+            <div class="tips">
+                <h4>💡 편집자 수준 분석 기능</h4>
+                <div class="tips-grid">
+                    <div class="tip-item"><span class="tip-icon">▶</span><span>띄어쓰기, 문장부호, 조사 변경까지 정밀 감지</span></div>
+                    <div class="tip-item"><span class="tip-icon">▶</span><span>한자표기, 외래어 표기법, 전문용어 변경 분석</span></div>
+                    <div class="tip-item"><span class="tip-icon">▶</span><span>단어 추가/삭제/순서변경, 어미 변화 감지</span></div>
+                    <div class="tip-item"><span class="tip-icon">▶</span><span>교정교열 전문가 수준의 세밀한 텍스트 비교</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let analysisResults = [];
+        let currentFilter = 'changes';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const oldTOC = document.getElementById('oldTOC');
+            const newTOC = document.getElementById('newTOC');
+            const compareBtn = document.getElementById('compareBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            oldTOC.addEventListener('input', () => updateLineCount('oldTOC', 'oldCount'));
+            newTOC.addEventListener('input', () => updateLineCount('newTOC', 'newCount'));
+            compareBtn.addEventListener('click', startComparison);
+            copyBtn.addEventListener('click', copyResults);
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    setFilter(e.target.dataset.filter);
+                });
+            });
+
+            updateLineCount('oldTOC', 'oldCount');
+            updateLineCount('newTOC', 'newCount');
+        });
+
+        function updateLineCount(textareaId, countId) {
+            const textarea = document.getElementById(textareaId);
+            const lines = textarea.value.split('\n').filter(line => line.trim().length > 0);
+            document.getElementById(countId).textContent = lines.length + '줄';
+        }
+
+        function parseTOC(text) {
+            if (!text.trim()) return [];
+            // 빈 줄 제거 및 연속된 공백 정리
+            const lines = text.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            return lines.map((line, index) => {
+                const trimmed = line.trim();
+                const indent = line.length - line.trimStart().length;
+                const level = Math.floor(indent / 2);
+                const patterns = [/^(.+?)\s*[\.]{2,}\s*(\d+)$/, /^(.+?)\s{3,}(\d+)$/, /^(.+?)\t+(\d+)$/, /^(.+?)\s*\((\d+)\)$/, /^(.+?)\s*[-~]\s*(\d+)$/];
+                let title = '', page = '';
+                for (const pattern of patterns) {
+                    const match = trimmed.match(pattern);
+                    if (match) { title = match[1].trim(); page = match[2]; break; }
+                }
+                if (!title) title = trimmed;
+                title = title.replace(/^[\d\.\-\s]*/, '').trim().replace(/[\.]{2,}$/, '').trim();
+                return { index, title, page, level, original: trimmed };
+            });
+        }
+
+        function calculateSimilarity(str1, str2) {
+            if (str1 === str2) return 1.0;
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            if (longer.length === 0) return 1.0;
+            const distance = levenshteinDistance(longer, shorter);
+            return (longer.length - distance) / longer.length;
+        }
+
+        function levenshteinDistance(str1, str2) {
+            const matrix = Array(str2.length + 1).fill().map(() => Array(str1.length + 1).fill(0));
+            for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+            for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+            for (let j = 1; j <= str2.length; j++) {
+                for (let i = 1; i <= str1.length; i++) {
+                    if (str1[i - 1] === str2[j - 1]) matrix[j][i] = matrix[j - 1][i - 1];
+                    else matrix[j][i] = Math.min(matrix[j - 1][i - 1] + 1, matrix[j][i - 1] + 1, matrix[j - 1][i] + 1);
+                }
+            }
+            return matrix[str2.length][str1.length];
+        }
+
+        function detectParticleChanges(oldText, newText) {
+            const changes = [];
+            const particles = [
+                {old: '은', new: '는', desc: '주격조사'},
+                {old: '이', new: '가', desc: '주격조사'},
+                {old: '을', new: '를', desc: '목적격조사'},
+                {old: '와', new: '과', desc: '접속조사'},
+                {old: '로', new: '으로', desc: '부사격조사'}
+            ];
+            
+            particles.forEach(({old, new: newParticle, desc}) => {
+                if (oldText.includes(old) && newText.includes(newParticle)) {
+                    changes.push(`${desc} 변경 (${old}→${newParticle})`);
+                } else if (oldText.includes(newParticle) && newText.includes(old)) {
+                    changes.push(`${desc} 변경 (${newParticle}→${old})`);
+                }
+            });
+            
+            return changes;
+        }
+
+        function detectEndingChanges(oldText, newText) {
+            const changes = [];
+            const endings = [
+                {old: '습니다', new: 'ㅂ니다', desc: '서술어미'},
+                {old: '했다', new: '하였다', desc: '과거형'},
+                {old: '한다', new: '함', desc: '현재형'},
+                {old: '것이다', new: '것임', desc: '서술형'},
+                {old: '되었다', new: '됐다', desc: '축약형'}
+            ];
+            
+            endings.forEach(({old, new: newEnding, desc}) => {
+                if (oldText.includes(old) && newText.includes(newEnding)) {
+                    changes.push(`${desc} 변경 (${old}→${newEnding})`);
+                } else if (oldText.includes(newEnding) && newText.includes(old)) {
+                    changes.push(`${desc} 변경 (${newEnding}→${old})`);
+                }
+            });
+            
+            return changes;
+        }
+
+        function analyzeWordChanges(oldText, newText) {
+            const changes = [];
+            const oldWords = oldText.split(/[\s\.,\(\)]+/).filter(w => w.length > 0);
+            const newWords = newText.split(/[\s\.,\(\)]+/).filter(w => w.length > 0);
+            
+            const addedWords = newWords.filter(word => !oldWords.includes(word));
+            if (addedWords.length > 0) {
+                changes.push(`단어 추가: "${addedWords.join(', ')}"`);
+            }
+            
+            const deletedWords = oldWords.filter(word => !newWords.includes(word));
+            if (deletedWords.length > 0) {
+                changes.push(`단어 삭제: "${deletedWords.join(', ')}"`);
+            }
+            
+            const commonWords = oldWords.filter(word => newWords.includes(word));
+            if (commonWords.length > 1) {
+                const oldOrder = commonWords.map(word => oldWords.indexOf(word));
+                const newOrder = commonWords.map(word => newWords.indexOf(word));
+                if (JSON.stringify(oldOrder) !== JSON.stringify(newOrder)) {
+                    changes.push('단어 순서 변경');
+                }
+            }
+            
+            return changes;
+        }
+
+        function detectNotationChanges(oldText, newText) {
+            const changes = [];
+            
+            const foreignWords = [
+                {old: '컴퓨터', new: 'computer', desc: '외래어→영문'},
+                {old: 'computer', new: '컴퓨터', desc: '영문→외래어'},
+                {old: '데이타', new: '데이터', desc: '외래어 표기법'},
+                {old: '프로그램', new: '프로그래밍', desc: '외래어 활용형'},
+                {old: '시스템', new: '체계', desc: '외래어→순우리말'},
+                {old: '매니져', new: '매니저', desc: '외래어 표기법'}
+            ];
+            
+            foreignWords.forEach(({old, new: newWord, desc}) => {
+                if (oldText.includes(old) && newText.includes(newWord)) {
+                    changes.push(`${desc} (${old}→${newWord})`);
+                }
+            });
+            
+            const terminology = [
+                {old: '분석', new: '해석', desc: '용어 선택'},
+                {old: '방법', new: '방법론', desc: '학술적 표현'},
+                {old: '연구', new: '조사', desc: '용어 정밀화'},
+                {old: '결과', new: '성과', desc: '뉘앙스 변경'}
+            ];
+            
+            terminology.forEach(({old, new: newTerm, desc}) => {
+                if (oldText.includes(old) && newText.includes(newTerm)) {
+                    changes.push(`${desc} (${old}→${newTerm})`);
+                }
+            });
+            
+            return changes;
+        }
+
+        function analyzeNumberChanges(oldItem, newItem) {
+            const changes = [];
+            
+            const chapterPatterns = [/제?(\d+)장/g, /제(\d+)/g];
+            let foundChapterChange = false;
+            
+            for (const pattern of chapterPatterns) {
+                const oldNumbers = oldItem.title.match(pattern);
+                const newNumbers = newItem.title.match(pattern);
+                
+                if (oldNumbers && newNumbers && oldNumbers[0] !== newNumbers[0] && !foundChapterChange) {
+                    const oldNum = oldNumbers[0].match(/\d+/)[0];
+                    const newNum = newNumbers[0].match(/\d+/)[0];
+                    changes.push(`장 번호 변경 (${oldNum}→${newNum})`);
+                    foundChapterChange = true;
+                    break;
+                }
+            }
+            
+            const otherPatterns = [
+                { pattern: /(\d+)절/g, name: '절' },
+                { pattern: /(\d+)항/g, name: '항' },
+                { pattern: /(\d+)부/g, name: '부' },
+                { pattern: /(\d+)차/g, name: '차' },
+                { pattern: /(\d+)편/g, name: '편' }
+            ];
+            
+            otherPatterns.forEach(({ pattern, name }) => {
+                const oldNumbers = oldItem.title.match(pattern);
+                const newNumbers = newItem.title.match(pattern);
+                if (oldNumbers && newNumbers && oldNumbers[0] !== newNumbers[0]) {
+                    const oldNum = oldNumbers[0].match(/\d+/)[0];
+                    const newNum = newNumbers[0].match(/\d+/)[0];
+                    changes.push(`${name} 번호 변경 (${oldNum}→${newNum})`);
+                }
+            });
+            
+            return changes;
+        }
+        
+        function analyzeChanges(oldItem, newItem) {
+            const changes = [];
+            const oldText = oldItem.title;
+            const newText = newItem.title;
+            
+            if (oldText === newText) {
+                // 제목이 같으면 페이지 변경만 확인
+                if (oldItem.page !== newItem.page && oldItem.page && newItem.page) {
+                    changes.push(`페이지 변경 (${oldItem.page}→${newItem.page})`);
+                }
+                return changes;
+            }
+            
+            // 제목이 다르면 상세 분석
+            const detailChanges = analyzeDetailChanges(oldText, newText);
+            changes.push(...detailChanges);
+            
+            // 페이지도 다르면 추가
+            if (oldItem.page !== newItem.page && oldItem.page && newItem.page) {
+                changes.push(`페이지 변경 (${oldItem.page}→${newItem.page})`);
+            }
+            
+            return changes.length > 0 ? changes : ['내용 수정'];
+        }
+
+        function analyzeDetailChanges(oldText, newText) {
+            const changes = [];
+            
+            // 단어 단위로 분석하여 정확한 변경 부분 찾기
+            const oldWords = oldText.split(/\s+/);
+            const newWords = newText.split(/\s+/);
+            
+            // 가장 긴 공통 부분 찾기
+            const commonPrefix = findCommonPrefix(oldWords, newWords);
+            const commonSuffix = findCommonSuffix(oldWords, newWords);
+            
+            // 변경된 부분 추출
+            const oldChanged = oldWords.slice(commonPrefix.length, oldWords.length - commonSuffix.length);
+            const newChanged = newWords.slice(commonPrefix.length, newWords.length - commonSuffix.length);
+            
+            if (oldChanged.length > 0 || newChanged.length > 0) {
+                const oldPart = oldChanged.join(' ') || '';
+                const newPart = newChanged.join(' ') || '';
+                
+                if (oldPart && newPart) {
+                    changes.push(`내용수정: ${oldPart}→${newPart}`);
+                } else if (oldPart && !newPart) {
+                    changes.push(`삭제: ${oldPart}`);
+                } else if (!oldPart && newPart) {
+                    changes.push(`추가: ${newPart}`);
+                }
+            }
+            
+            // 만약 단어 단위로 찾지 못했다면 문자 단위로 분석
+            if (changes.length === 0 && oldText !== newText) {
+                const charChanges = findCharacterChanges(oldText, newText);
+                if (charChanges) {
+                    changes.push(charChanges);
+                }
+            }
+            
+            return changes;
+        }
+
+        function findCommonPrefix(arr1, arr2) {
+            const common = [];
+            const minLength = Math.min(arr1.length, arr2.length);
+            for (let i = 0; i < minLength; i++) {
+                if (arr1[i] === arr2[i]) {
+                    common.push(arr1[i]);
+                } else {
+                    break;
+                }
+            }
+            return common;
+        }
+
+        function findCommonSuffix(arr1, arr2) {
+            const common = [];
+            const minLength = Math.min(arr1.length, arr2.length);
+            for (let i = 0; i < minLength; i++) {
+                const oldIndex = arr1.length - 1 - i;
+                const newIndex = arr2.length - 1 - i;
+                if (arr1[oldIndex] === arr2[newIndex]) {
+                    common.unshift(arr1[oldIndex]);
+                } else {
+                    break;
+                }
+            }
+            return common;
+        }
+
+        function findCharacterChanges(oldText, newText) {
+            // 문자 단위로 비교하여 가장 작은 변경 부분 찾기
+            let start = 0;
+            let end = 0;
+            
+            // 앞에서부터 같은 부분 찾기
+            while (start < oldText.length && start < newText.length && oldText[start] === newText[start]) {
+                start++;
+            }
+            
+            // 뒤에서부터 같은 부분 찾기
+            while (end < oldText.length - start && end < newText.length - start && 
+                   oldText[oldText.length - 1 - end] === newText[newText.length - 1 - end]) {
+                end++;
+            }
+            
+            const oldChanged = oldText.slice(start, oldText.length - end);
+            const newChanged = newText.slice(start, newText.length - end);
+            
+            if (oldChanged && newChanged) {
+                return `내용수정: ${oldChanged}→${newChanged}`;
+            } else if (oldChanged) {
+                return `삭제: ${oldChanged}`;
+            } else if (newChanged) {
+                return `추가: ${newChanged}`;
+            }
+            
+            return null;
+        }
+
+        function analyzeTextChanges(oldText, newText) {
+            const changes = [];
+            
+            if (oldText === newText) return [];
+            
+            const oldSpaces = oldText.replace(/[^\s]/g, '');
+            const newSpaces = newText.replace(/[^\s]/g, '');
+            if (oldSpaces !== newSpaces) {
+                changes.push('띄어쓰기 수정');
+            }
+            
+            const oldPunct = oldText.replace(/[^\.,!?;:()]/g, '');
+            const newPunct = newText.replace(/[^\.,!?;:()]/g, '');
+            if (oldPunct !== newPunct) {
+                changes.push('문장부호 수정');
+            }
+            
+            const hanjaPattern = /[一-龯]/;
+            const oldHasHanja = hanjaPattern.test(oldText);
+            const newHasHanja = hanjaPattern.test(newText);
+            if (oldHasHanja !== newHasHanja) {
+                if (newHasHanja) changes.push('한자 표기 추가');
+                else changes.push('한자 표기 제거');
+            }
+            
+            const particleChanges = detectParticleChanges(oldText, newText);
+            changes.push(...particleChanges);
+            
+            const endingChanges = detectEndingChanges(oldText, newText);
+            changes.push(...endingChanges);
+            
+            const wordChanges = analyzeWordChanges(oldText, newText);
+            changes.push(...wordChanges);
+            
+            const notationChanges = detectNotationChanges(oldText, newText);
+            changes.push(...notationChanges);
+            
+            return changes;
+        }
+
+        function analyzePageChanges(oldItem, newItem) {
+            const changes = [];
+            
+            if (oldItem.page !== newItem.page && oldItem.page && newItem.page) {
+                const oldPageNum = parseInt(oldItem.page);
+                const newPageNum = parseInt(newItem.page);
+                const pageDiff = Math.abs(newPageNum - oldPageNum);
+                
+                if (pageDiff > 20) {
+                    changes.push(`페이지 대폭 변경 (${oldItem.page}→${newItem.page})`);
+                } else if (pageDiff > 5) {
+                    changes.push(`페이지 상당 변경 (${oldItem.page}→${newItem.page})`);
+                } else {
+                    changes.push(`페이지 소폭 변경 (${oldItem.page}→${newItem.page})`);
+                }
+            }
+            
+            return changes;
+        }
+        
+        function compareItems(oldItems, newItems) {
+            const results = [];
+            const usedOld = new Set();
+            const usedNew = new Set();
+            
+            // 1단계: 제목과 순서가 완전히 일치하는 항목들 매칭
+            oldItems.forEach((oldItem, oldIndex) => {
+                if (oldIndex < newItems.length) {
+                    const newItem = newItems[oldIndex];
+                    if (oldItem.title === newItem.title) {
+                        usedOld.add(oldIndex);
+                        usedNew.add(oldIndex);
+                        const changes = [];
+                        if (oldItem.page !== newItem.page && oldItem.page && newItem.page) {
+                            changes.push(`페이지 ${oldItem.page} → ${newItem.page}`);
+                        }
+                        results.push({ 
+                            type: changes.length > 0 ? 'page-changed' : 'unchanged', 
+                            oldItem, 
+                            newItem, 
+                            changes, 
+                            severity: 'low', 
+                            position: oldIndex 
+                        });
+                    }
+                }
+            });
+            
+            // 2단계: 제목이 같지만 위치가 다른 항목들 매칭
+            oldItems.forEach((oldItem, oldIndex) => {
+                if (usedOld.has(oldIndex)) return;
+                
+                for (let newIndex = 0; newIndex < newItems.length; newIndex++) {
+                    if (usedNew.has(newIndex)) continue;
+                    
+                    const newItem = newItems[newIndex];
+                    if (oldItem.title === newItem.title) {
+                        usedOld.add(oldIndex);
+                        usedNew.add(newIndex);
+                        const changes = ['위치 변경'];
+                        if (oldItem.page !== newItem.page && oldItem.page && newItem.page) {
+                            changes.push(`페이지 ${oldItem.page} → ${newItem.page}`);
+                        }
+                        results.push({ 
+                            type: 'page-changed', 
+                            oldItem, 
+                            newItem, 
+                            changes, 
+                            severity: 'medium', 
+                            position: Math.min(oldIndex, newIndex) 
+                        });
+                        break;
+                    }
+                }
+            });
+            
+            // 3단계: 유사한 제목의 항목들 매칭 (70% 이상 유사도)
+            oldItems.forEach((oldItem, oldIndex) => {
+                if (usedOld.has(oldIndex)) return;
+                
+                let bestMatch = null, bestSimilarity = 0, bestNewIndex = -1;
+                newItems.forEach((newItem, newIndex) => {
+                    if (usedNew.has(newIndex)) return;
+                    const similarity = calculateSimilarity(oldItem.title.toLowerCase(), newItem.title.toLowerCase());
+                    if (similarity > bestSimilarity && similarity > 0.7) {
+                        bestMatch = newItem;
+                        bestSimilarity = similarity;
+                        bestNewIndex = newIndex;
+                    }
+                });
+                
+                if (bestMatch) {
+                    usedOld.add(oldIndex);
+                    usedNew.add(bestNewIndex);
+                    const changes = analyzeChanges(oldItem, bestMatch);
+                    results.push({ 
+                        type: 'modified', 
+                        oldItem, 
+                        newItem: bestMatch, 
+                        changes, 
+                        severity: 'medium', 
+                        position: Math.min(oldIndex, bestNewIndex) 
+                    });
+                }
+            });
+            
+            // 4단계: 삭제된 항목들
+            oldItems.forEach((oldItem, oldIndex) => {
+                if (!usedOld.has(oldIndex)) {
+                    results.push({ 
+                        type: 'deleted', 
+                        oldItem, 
+                        newItem: null, 
+                        changes: ['삭제됨'], 
+                        severity: 'high', 
+                        position: oldIndex 
+                    });
+                }
+            });
+            
+            // 5단계: 추가된 항목들
+            newItems.forEach((newItem, newIndex) => {
+                if (!usedNew.has(newIndex)) {
+                    results.push({ 
+                        type: 'added', 
+                        oldItem: null, 
+                        newItem, 
+                        changes: ['새로 추가됨'], 
+                        severity: 'medium', 
+                        position: newIndex 
+                    });
+                }
+            });
+            
+            return results.sort((a, b) => a.position - b.position);
+        }
+
+        function startComparison() {
+            const oldText = document.getElementById('oldTOC').value;
+            const newText = document.getElementById('newTOC').value;
+            if (!oldText.trim() || !newText.trim()) { 
+                alert('기존 목차와 새로운 목차를 모두 입력해주세요.'); 
+                return; 
+            }
+            const btn = document.getElementById('compareBtn');
+            btn.disabled = true;
+            btn.textContent = '🔄 분석중...';
+            setTimeout(() => {
+                const oldItems = parseTOC(oldText);
+                const newItems = parseTOC(newText);
+                analysisResults = compareItems(oldItems, newItems);
+                displayResults();
+                btn.disabled = false;
+                btn.textContent = '🔍 목차 비교 분석 시작';
+            }, 500);
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.add('show');
+            const stats = {
+                total: analysisResults.length,
+                added: analysisResults.filter(r => r.type === 'added').length,
+                deleted: analysisResults.filter(r => r.type === 'deleted').length,
+                modified: analysisResults.filter(r => r.type === 'modified' || r.type === 'page-changed').length,
+                urgent: analysisResults.filter(r => r.severity === 'high').length
+            };
+            document.getElementById('totalCount').textContent = stats.total;
+            document.getElementById('addedCount').textContent = stats.added;
+            document.getElementById('deletedCount').textContent = stats.deleted;
+            document.getElementById('modifiedCount').textContent = stats.modified;
+            document.getElementById('urgentCount').textContent = stats.urgent;
+            updateResultsList();
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            updateResultsList();
+        }
+
+        function updateResultsList() {
+            const resultsListDiv = document.getElementById('resultsList');
+            let filteredResults = analysisResults;
+            if (currentFilter === 'changes') {
+                filteredResults = analysisResults.filter(r => r.type !== 'unchanged');
+            } else if (currentFilter === 'urgent') {
+                filteredResults = analysisResults.filter(r => r.severity === 'high');
+            }
+            
+            if (filteredResults.length === 0) {
+                resultsListDiv.innerHTML = '<div class="no-results"><div class="no-results-icon">✅</div><div class="no-results-title">표시할 항목이 없습니다</div></div>';
+                return;
+            }
+            
+            resultsListDiv.innerHTML = filteredResults.map((result, index) => {
+                const typeLabels = { 
+                    'added': '➕ 추가됨', 
+                    'deleted': '➖ 삭제됨', 
+                    'modified': '✏️ 수정됨', 
+                    'page-changed': '📄 페이지 변경', 
+                    'unchanged': '✅ 동일' 
+                };
+                
+                let bodyHtml = '';
+                if (result.type === 'added') {
+                    bodyHtml = `<div class="change-box new"><span class="change-label">새로 추가:</span> <span class="original-text">${result.newItem.original}</span></div>`;
+                } else if (result.type === 'deleted') {
+                    bodyHtml = `<div class="change-box old"><span class="change-label">삭제됨:</span> <span class="original-text">${result.oldItem.original}</span></div>`;
+                } else if (result.type === 'modified') {
+                    let formattedChanges = '';
+                    result.changes.forEach(change => {
+                        if (change.startsWith('내용수정:')) {
+                            const content = change.substring(5).trim();
+                            if (content.includes('→')) {
+                                const [before, after] = content.split('→');
+                                formattedChanges += `<span class="change-item"><span class="change-tag">내용수정</span> <span class="change-content"><span class="change-before">${before.trim()}</span><span class="change-arrow"> → </span><span class="change-after">${after.trim()}</span></span></span>`;
+                            } else {
+                                formattedChanges += `<span class="change-item"><span class="change-tag">내용수정</span> <span class="change-content">${content}</span></span>`;
+                            }
+                        } else if (change.startsWith('추가:')) {
+                            const content = change.substring(3).trim();
+                            formattedChanges += `<span class="change-item"><span class="change-tag">추가</span> <span class="change-content"><span class="change-after">${content}</span></span></span>`;
+                        } else if (change.startsWith('삭제:')) {
+                            const content = change.substring(3).trim();
+                            formattedChanges += `<span class="change-item"><span class="change-tag">삭제</span> <span class="change-content"><span class="change-before">${content}</span></span></span>`;
+                        } else {
+                            formattedChanges += `<span class="change-item"><span class="change-tag">${change}</span></span>`;
+                        }
+                    });
+                    
+                    bodyHtml = `
+                        <div class="change-box old"><span class="change-label">이전 내용:</span> <span class="original-text">${result.oldItem.original}</span></div>
+                        <div class="change-box new"><span class="change-label">수정된 내용:</span> <span class="original-text">${result.newItem.original}</span></div>
+                        <div class="change-box info"><span class="change-label">🔍 변경사항: </span>${formattedChanges}</div>
+                    `;
+                } else if (result.type === 'page-changed') {
+                    let formattedChanges = '';
+                    result.changes.forEach(change => {
+                        if (change.startsWith('위치 변경')) {
+                            formattedChanges += `<span class="change-item"><span class="change-tag">위치 변경</span></span>`;
+                        } else if (change.startsWith('페이지')) {
+                            formattedChanges += `<span class="change-item"><span class="change-tag">${change}</span></span>`;
+                        } else {
+                            formattedChanges += `<span class="change-item"><span class="change-tag">${change}</span></span>`;
+                        }
+                    });
+                    
+                    bodyHtml = `
+                        <div class="change-box old"><span class="change-label">이전:</span> <span class="original-text">${result.oldItem.original}</span></div>
+                        <div class="change-box new"><span class="change-label">이후:</span> <span class="original-text">${result.newItem.original}</span></div>
+                        <div class="change-box info"><span class="change-label">🔍 변경사항: </span>${formattedChanges}</div>
+                    `;
+                } else {
+                    bodyHtml = `<div class="change-box same"><span class="change-label">동일:</span> <span class="original-text">${result.oldItem.original}</span></div>`;
+                }
+                
+                return `<div class="result-item ${result.type}"><div class="result-header ${result.type}"><span>${typeLabels[result.type]} #${index + 1}</span>${result.severity === 'high' ? '<span class="urgent-badge">🚨 긴급</span>' : ''}</div><div class="result-body">${bodyHtml}</div></div>`;
+            }).join('');
+        }
+
+        // formatChanges 함수 제거 (인라인으로 처리하므로 불필요)
+
+        function copyResults() {
+            if (analysisResults.length === 0) { 
+                alert('비교 결과가 없습니다.'); 
+                return; 
+            }
+            
+            // 현재 필터에 따라 결과 필터링
+            let filteredResults = analysisResults;
+            let filterLabel = '전체';
+            
+            if (currentFilter === 'changes') {
+                filteredResults = analysisResults.filter(r => r.type !== 'unchanged');
+                filterLabel = '변경사항';
+            } else if (currentFilter === 'urgent') {
+                filteredResults = analysisResults.filter(r => r.severity === 'high');
+                filterLabel = '긴급검토';
+            }
+            
+            if (filteredResults.length === 0) {
+                alert('현재 필터에 해당하는 결과가 없습니다.');
+                return;
+            }
+            
+            let text = `목차 비교 분석 결과 (${filterLabel})\n생성일시: ` + new Date().toLocaleString('ko-KR') + '\n\n';
+            filteredResults.forEach((result, index) => {
+                const typeLabels = { 
+                    'added': '➕ 추가됨', 
+                    'deleted': '➖ 삭제됨', 
+                    'modified': '✏️ 수정됨', 
+                    'page-changed': '📄 페이지 변경', 
+                    'unchanged': '✅ 동일' 
+                };
+                
+                text += `${index + 1}. ${typeLabels[result.type]}${result.severity === 'high' ? ' 🚨 긴급' : ''}\n`;
+                if (result.oldItem) text += `   기존: ${result.oldItem.original}\n`;
+                if (result.newItem) text += `   새로: ${result.newItem.original}\n`;
+                if (result.changes && result.changes.length > 0) text += `   변경사항: ${result.changes.join(', ')}\n`;
+                text += '\n';
+            });
+            
+            text += '※ 편집자 수준 목차 비교 분석기에서 생성됨';
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(`${filterLabel} 분석 결과가 클립보드에 복사되었습니다! (${filteredResults.length}개 항목)`);
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('분석 결과가 클립보드에 복사되었습니다!');
+            } catch (err) {
+                alert('복사에 실패했습니다. 수동으로 복사해주세요.');
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
