@@ -685,7 +685,7 @@
 
                 <div class="input-group">
                     <label for="extraPages">목차에 포함되지 않는 페이지 수 (표지, 서문 등):</label>
-                    <input type="number" id="extraPages" value="0" min="0">
+                    <input type="number" id="extraPages" placeholder="0" min="0">
                 </div>
 
                 <div class="button-group">
@@ -698,9 +698,6 @@
                     📋 생성된 색지 페이지 정보
                 </div>
                 <div class="results-content" id="resultsContent">
-                </div>
-                <div class="copy-section">
-                    <button class="copy-btn" id="copyBtn">결과 복사하기</button>
                 </div>
             </div>
         </div>
@@ -768,29 +765,54 @@
             console.log('DOM 로드 완료');
             
             // 탭 전환 버튼 이벤트 리스너
-            document.getElementById('colorPageBtn').addEventListener('click', function() {
-                switchTab('colorPage');
-            });
+            var colorPageBtn = document.getElementById('colorPageBtn');
+            var tocAnalyzerBtn = document.getElementById('tocAnalyzerBtn');
             
-            document.getElementById('tocAnalyzerBtn').addEventListener('click', function() {
-                switchTab('tocAnalyzer');
-            });
+            if (colorPageBtn) {
+                colorPageBtn.addEventListener('click', function() {
+                    switchTab('colorPage');
+                });
+            }
+            
+            if (tocAnalyzerBtn) {
+                tocAnalyzerBtn.addEventListener('click', function() {
+                    switchTab('tocAnalyzer');
+                });
+            }
 
             // 색지 페이지 생성기 이벤트 리스너
-            document.getElementById('generateBtn').addEventListener('click', generateColorPages);
-            document.getElementById('copyBtn').addEventListener('click', copyResults);
+            var generateBtn = document.getElementById('generateBtn');
+            if (generateBtn) {
+                generateBtn.addEventListener('click', generateColorPages);
+            }
 
             // 목차 비교 분석기 이벤트 리스너
-            document.getElementById('oldTOC').addEventListener('input', function() {
+            var oldTOC = document.getElementById('oldTOC');
+            var newTOC = document.getElementById('newTOC');
+            var compareBtn = document.getElementById('compareBtn');
+            var copyAnalyzerBtn = document.getElementById('copyAnalyzerBtn');
+            
+            if (oldTOC) {
+                oldTOC.addEventListener('input', function() {
+                    updateLineCount('oldTOC', 'oldCount');
+                });
                 updateLineCount('oldTOC', 'oldCount');
-            });
+            }
             
-            document.getElementById('newTOC').addEventListener('input', function() {
+            if (newTOC) {
+                newTOC.addEventListener('input', function() {
+                    updateLineCount('newTOC', 'newCount');
+                });
                 updateLineCount('newTOC', 'newCount');
-            });
+            }
             
-            document.getElementById('compareBtn').addEventListener('click', startComparison);
-            document.getElementById('copyAnalyzerBtn').addEventListener('click', copyAnalyzerResults);
+            if (compareBtn) {
+                compareBtn.addEventListener('click', startComparison);
+            }
+            
+            if (copyAnalyzerBtn) {
+                copyAnalyzerBtn.addEventListener('click', copyAnalyzerResults);
+            }
 
             // 필터 버튼 이벤트 리스너
             var filterBtns = document.querySelectorAll('.toc-analyzer .filter-btn');
@@ -799,10 +821,6 @@
                     setFilter(e.target.dataset.filter);
                 });
             });
-
-            // 초기 줄 수 업데이트
-            updateLineCount('oldTOC', 'oldCount');
-            updateLineCount('newTOC', 'newCount');
             
             console.log('모든 이벤트 리스너 등록 완료');
         });
@@ -924,6 +942,23 @@
             var results = document.getElementById('results');
             
             var html = '';
+            var colorPageNumbers = colorPages.map(function(item) { return item.colorPage; }).sort(function(a, b) { return a - b; });
+            
+            // 요약 정보를 맨 위에 배치
+            html += '<div class="summary-section">';
+            html += '<h3>📊 요약 정보</h3>';
+            html += '<p><strong>전체 챕터 수:</strong> ' + chapters.length + '개</p>';
+            html += '<p><strong>추가 페이지 수:</strong> ' + extraPages + '페이지</p>';
+            html += '<p id="colorPageResult"><strong>간지페이지(PDF):</strong> ' + colorPageNumbers.join(', ') + ' (총 ' + colorPageNumbers.length + '페이지)</p>';
+            html += '<div style="text-align: center; margin-top: 15px;">';
+            html += '<button onclick="copyColorPageResult()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); margin-right: 10px;" onmouseover="this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 18px rgba(102, 126, 234, 0.4)\'" onmouseout="this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 12px rgba(102, 126, 234, 0.3)\'">📋 페이지 번호만 복사</button>';
+            html += '<button onclick="copyResults()" style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 16px rgba(236, 72, 153, 0.3);" onmouseover="this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 8px 24px rgba(236, 72, 153, 0.4)\'" onmouseout="this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 6px 16px rgba(236, 72, 153, 0.3)\'">📋 전체 결과 복사</button>';
+            html += '</div>';
+            html += '</div>';
+
+            // 상세 결과는 아래에 배치
+            html += '<div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #e2e8f0;">';
+            html += '<h3 style="color: #1e293b; font-size: 1.3em; margin-bottom: 20px; font-weight: 600;">📋 상세 결과</h3>';
 
             for (var i = 0; i < colorPages.length; i++) {
                 var item = colorPages[i];
@@ -938,43 +973,48 @@
                 html += '</div>';
                 html += '</div>';
             }
-
-            var colorPageNumbers = colorPages.map(function(item) { return item.colorPage; }).sort(function(a, b) { return a - b; });
             
-            html += '<div class="summary-section">';
-            html += '<h3>📊 요약 정보</h3>';
-            html += '<p><strong>전체 챕터 수:</strong> ' + chapters.length + '개</p>';
-            html += '<p><strong>간지페이지(PDF):</strong> ' + colorPageNumbers.join(', ') + ' (총 ' + colorPageNumbers.length + '페이지)</p>';
-            html += '<p><strong>추가 페이지 수:</strong> ' + extraPages + '페이지</p>';
             html += '</div>';
 
             resultsContent.innerHTML = html;
             results.classList.remove('hidden');
-            results.scrollIntoView({ behavior: 'smooth' });
+            
+            // 요약 정보로 부드럽게 스크롤
+            setTimeout(function() {
+                results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
 
         function copyResults() {
-            var resultsContent = document.getElementById('resultsContent');
-            var colorPages = [];
+            var colorPageNumbers = [];
             
-            var pageInfos = resultsContent.querySelectorAll('.page-info');
-            for (var i = 0; i < pageInfos.length; i++) {
-                var match = pageInfos[i].textContent.match(/실제 PDF 색지: (\d+)페이지/);
-                if (match) {
-                    colorPages.push(parseInt(match[1]));
-                }
-            }
-
-            var copyText = '간지페이지(PDF): ' + colorPages.sort(function(a, b) { return a - b; }).join(', ');
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(copyText).then(function() {
-                    alert('결과가 클립보드에 복사되었습니다!');
-                }).catch(function() {
+            // 결과에서 색지 페이지 번호 추출
+            var resultElement = document.getElementById('colorPageResult');
+            if (resultElement) {
+                // 전체 텍스트를 그대로 복사 (총 페이지 개수 포함)
+                var fullText = resultElement.textContent;
+                var copyText = fullText.replace('간지페이지(PDF): ', '간지페이지(PDF): ');
+                
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(copyText).then(function() {
+                        // 버튼 텍스트 임시 변경으로 피드백
+                        var button = event.target;
+                        var originalText = button.textContent;
+                        button.textContent = '✅ 복사완료!';
+                        button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                        
+                        setTimeout(function() {
+                            button.textContent = originalText;
+                            button.style.background = 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)';
+                        }, 1500);
+                    }).catch(function() {
+                        fallbackCopy(copyText);
+                    });
+                } else {
                     fallbackCopy(copyText);
-                });
+                }
             } else {
-                fallbackCopy(copyText);
+                alert('복사할 결과가 없습니다.');
             }
         }
 
@@ -986,6 +1026,39 @@
             document.execCommand('copy');
             document.body.removeChild(textArea);
             alert('결과가 클립보드에 복사되었습니다!');
+        }
+
+        // 간지페이지 결과만 복사하는 함수
+        function copyColorPageResult() {
+            var resultElement = document.getElementById('colorPageResult');
+            if (!resultElement) {
+                alert('복사할 결과가 없습니다.');
+                return;
+            }
+            
+            // 페이지 번호만 추출 (7, 15, 27, 35, 45 형태)
+            var fullText = resultElement.textContent;
+            var pageNumbers = fullText.match(/간지페이지\(PDF\):\s*([0-9,\s]+)/);
+            var copyText = pageNumbers ? pageNumbers[1].trim() : '';
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(copyText).then(function() {
+                    // 버튼 텍스트 임시 변경으로 피드백
+                    var button = event.target;
+                    var originalText = button.textContent;
+                    button.textContent = '✅ 복사완료!';
+                    button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                    
+                    setTimeout(function() {
+                        button.textContent = originalText;
+                        button.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    }, 1500);
+                }).catch(function() {
+                    fallbackCopy(copyText);
+                });
+            } else {
+                fallbackCopy(copyText);
+            }
         }
 
         // 목차 비교 분석기 함수들
