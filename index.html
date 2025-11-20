@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>목차 도구 통합 페이지</title>
+    <title>목차 도구 통합 페이지 (개선판)</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
     <style>
@@ -48,6 +48,18 @@
             opacity: 0.9;
             font-size: 1em;
             font-weight: 400;
+        }
+
+        .upgrade-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
         }
 
         .tab-navigation {
@@ -95,7 +107,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 입력 섹션 컴팩트화 */
+        /* 색지 페이지 생성기 스타일 유지 */
         .color-page-generator .input-section {
             background: #f8fafc;
             border-radius: 12px;
@@ -191,7 +203,6 @@
             box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
         }
 
-        /* 결과 섹션 대폭 개선 */
         .color-page-generator .results-section {
             background: #ffffff;
             border-radius: 12px;
@@ -214,7 +225,6 @@
             padding: 20px 25px;
         }
 
-        /* 핵심 정보 카드형 레이아웃 */
         .color-page-generator .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -283,269 +293,11 @@
             transform: translateY(-1px);
         }
 
-        .color-page-generator .all-summary-card {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-        }
-
-        .color-page-generator .all-summary-card h3 {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .color-page-generator .all-summary-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .color-page-generator .summary-stat {
-            background: rgba(255,255,255,0.1);
-            padding: 12px 15px;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .color-page-generator .summary-stat strong {
-            display: block;
-            font-size: 0.85em;
-            margin-bottom: 4px;
-            opacity: 0.9;
-        }
-
-        .color-page-generator .summary-stat span {
-            font-size: 1.1em;
-            font-weight: 700;
-        }
-
-        .color-page-generator .all-separators {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .color-page-generator .separator-line {
-            margin-bottom: 8px;
-            font-size: 0.95em;
-            font-weight: 600;
-        }
-
-        .color-page-generator .separator-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .color-page-generator .copy-all-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-            backdrop-filter: blur(10px);
-            width: 100%;
-        }
-
-        .color-page-generator .copy-all-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
-        }
-
-        /* 상세 결과 컴팩트화 */
-        .color-page-generator .collapsible-section {
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            margin-top: 20px;
-            overflow: hidden;
-            background: white;
-        }
-
-        .color-page-generator .collapsible-header {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            color: white;
-            padding: 15px 25px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1em;
-            transition: background 0.3s ease;
-        }
-
-        .color-page-generator .collapsible-header:hover {
-            background: linear-gradient(135deg, #475569 0%, #334155 100%);
-        }
-
-        .color-page-generator .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .color-page-generator .collapsible-content.expanded {
-            max-height: 1500px;
-        }
-
-        .color-page-generator .collapsible-arrow {
-            transition: transform 0.3s ease;
-        }
-
-        .color-page-generator .collapsible-arrow.rotated {
-            transform: rotate(180deg);
-        }
-
-        .color-page-generator .detail-tabs {
-            display: flex;
-            background: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
-            overflow-x: auto;
-            flex-wrap: nowrap;
-        }
-
-        .color-page-generator .detail-tabs::-webkit-scrollbar {
-            height: 3px;
-        }
-
-        .color-page-generator .detail-tabs::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        .color-page-generator .detail-tabs::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 2px;
-        }
-
-        .color-page-generator .detail-tab {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            min-width: 100px;
-        }
-
-        .color-page-generator .detail-tab:hover {
-            background: #f1f5f9;
-            color: #334155;
-        }
-
-        .color-page-generator .detail-tab.active {
-            color: #667eea;
-            background: white;
-            border-bottom-color: #667eea;
-        }
-
-        .color-page-generator .detail-tab-content {
-            display: none;
-            padding: 20px;
-            max-height: 1200px;
-            overflow-y: auto;
-        }
-
-        .color-page-generator .detail-tab-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .color-page-generator .detail-tab-content::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 3px;
-        }
-
-        .color-page-generator .detail-tab-content::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        .color-page-generator .detail-tab-content::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        .color-page-generator .detail-tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .color-page-generator .result-item {
-            background: #f8fafc;
-            border-left: 4px solid #667eea;
-            padding: 15px 20px;
-            margin-bottom: 12px;
-            border-radius: 0 8px 8px 0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
-        }
-
-        .color-page-generator .result-item:hover {
-            transform: translateX(3px);
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
-
-        .color-page-generator .result-item h3 {
-            color: #1e293b;
-            margin-bottom: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-        }
-
-        .color-page-generator .page-info {
-            font-family: 'Pretendard', monospace;
-            background: #e2e8f0;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-weight: 600;
-            color: #475569;
-            line-height: 1.4;
-            font-size: 0.85em;
-        }
-
-        .color-page-generator .example {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #1e40af;
-        }
-
-        .color-page-generator .example-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #1e40af;
-            font-size: 14px;
-        }
-
-        .color-page-generator .subtitle {
-            color: #64748b;
-            font-style: italic;
-            margin: 6px 0;
-            font-size: 0.9em;
-            padding-left: 4px;
-        }
-
         .color-page-generator .hidden {
             display: none;
         }
 
-        /* 목차 분석기 스타일 유지 */
+        /* 개선된 목차 분석기 스타일 */
         .toc-analyzer .input-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -754,7 +506,7 @@
 
         .toc-analyzer .result-row {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 12px;
             border-radius: 8px;
             overflow: hidden;
@@ -770,8 +522,8 @@
 
         .toc-analyzer .status-indicator {
             width: 5px;
-            height: 70px;
-            min-height: 70px;
+            min-height: 100%;
+            align-self: stretch;
         }
 
         .toc-analyzer .status-indicator.added { background: #28a745; }
@@ -782,14 +534,14 @@
 
         .toc-analyzer .content-main {
             flex: 1;
-            padding: 12px 16px;
+            padding: 15px 18px;
         }
 
         .toc-analyzer .content-title {
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: #2c3e50;
-            line-height: 1.3;
+            line-height: 1.4;
             font-size: 0.95em;
         }
 
@@ -797,36 +549,75 @@
             font-size: 0.8em;
             color: #6c757d;
             line-height: 1.3;
+            margin-bottom: 8px;
         }
 
-        .toc-analyzer .content-before,
-        .toc-analyzer .content-after {
-            display: block;
-            margin-bottom: 3px;
-            padding: 3px 0;
+        /* 개선된 차이점 표시 스타일 */
+        .diff-container {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #e9ecef;
         }
 
-        .toc-analyzer .content-before {
-            color: #dc3545;
+        .diff-line {
+            margin: 4px 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Pretendard', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .diff-line.deleted {
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+            color: #721c24;
+        }
+
+        .diff-line.added {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            color: #155724;
+        }
+
+        .diff-line.modified {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            color: #856404;
+        }
+
+        /* 인라인 단어 단위 하이라이팅 */
+        .word-diff {
+            display: inline;
+        }
+
+        .word-removed {
+            background: #ffcdd2;
+            color: #c62828;
             text-decoration: line-through;
+            padding: 1px 3px;
+            border-radius: 2px;
+            margin: 0 1px;
         }
 
-        .toc-analyzer .content-after {
-            color: #28a745;
+        .word-added {
+            background: #c8e6c9;
+            color: #2e7d32;
+            padding: 1px 3px;
+            border-radius: 2px;
+            margin: 0 1px;
+            font-weight: 600;
         }
 
-        .toc-analyzer .content-single {
-            color: #2c3e50;
-        }
-
-        .toc-analyzer .content-single.deleted {
-            color: #dc3545;
-            text-decoration: line-through;
+        .word-unchanged {
+            color: #333;
         }
 
         .toc-analyzer .status-badge {
             padding: 6px 12px;
-            margin-right: 12px;
+            margin: 12px 12px 12px 0;
             border-radius: 16px;
             font-size: 0.75em;
             font-weight: 600;
@@ -858,6 +649,46 @@
             margin-bottom: 6px;
         }
 
+        /* 새로운 차이점 분석 옵션 */
+        .analysis-options {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .analysis-options h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .option-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .option-item input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .option-item label {
+            font-size: 0.85em;
+            color: #333;
+            cursor: pointer;
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -885,10 +716,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .color-page-generator .all-summary-info {
-                grid-template-columns: 1fr;
-            }
-
             .toc-analyzer .input-section {
                 grid-template-columns: 1fr;
                 gap: 15px;
@@ -906,14 +733,19 @@
             .toc-analyzer .stat-card {
                 min-width: 60px;
             }
+
+            .option-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📚 목차 도구 모음</h1>
-            <p>효율적인 목차 관리를 위한 전문 도구</p>
+            <h1>📚 목차 도구 모음 <span class="upgrade-badge">NEW v2.0</span></h1>
+            <p>세밀한 차이점 분석을 지원하는 고급 목차 관리 도구</p>
         </div>
 
         <div class="tab-navigation">
@@ -921,7 +753,7 @@
                 📖 색지 페이지 생성기
             </button>
             <button class="tab-button" id="tocAnalyzerBtn">
-                📋 목차 비교 분석기
+                🔍 고급 목차 비교 분석기
             </button>
         </div>
 
@@ -979,6 +811,24 @@
         </div>
 
         <div id="tocAnalyzerTab" class="tab-content toc-analyzer">
+            <div class="analysis-options">
+                <h4>🔧 분석 옵션</h4>
+                <div class="option-group">
+                    <div class="option-item">
+                        <input type="checkbox" id="wordLevelDiff" checked>
+                        <label for="wordLevelDiff">단어 단위 차이점 하이라이팅</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="showPageChanges" checked>
+                        <label for="showPageChanges">페이지 번호 변경사항 강조</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="strictMatching">
+                        <label for="strictMatching">엄격한 매칭 모드</label>
+                    </div>
+                </div>
+            </div>
+
             <div class="input-section">
                 <div class="input-box">
                     <div class="input-title">📄 기존 목차</div>
@@ -992,7 +842,7 @@
                 </div>
             </div>
             <div class="compare-section">
-                <button class="compare-btn" id="compareBtn">🔍 목차 비교 분석 시작</button>
+                <button class="compare-btn" id="compareBtn">🔍 고급 목차 비교 분석 시작</button>
             </div>
             <div class="results" id="analyzerResults">
                 <div class="controls">
@@ -1095,6 +945,7 @@
             }
         }
 
+        // 색지 페이지 생성기 함수들 (기존과 동일)
         function generateColorPages() {
             var tocInput = document.getElementById('tocInput').value.trim();
             var extraPages = parseInt(document.getElementById('extraPages').value) || 0;
@@ -1122,27 +973,20 @@
                 var line = lines[i];
                 var trimmedLine = line.trim();
                 
-                // 페이지 번호 패턴을 더 정확하게 개선
                 var pageMatch = null;
                 
-                // 패턴 1: 제목 뒤에 탭이나 여러 공백 후 숫자 (가장 일반적)
                 pageMatch = trimmedLine.match(/^(.+?)\s{2,}(\d+)\s*$/);
                 if (!pageMatch) {
-                    // 패턴 2: 제목 뒤에 점들(....) 후 숫자
                     pageMatch = trimmedLine.match(/^(.+?)[·\.]{2,}\s*(\d+)\s*$/);
                 }
                 if (!pageMatch) {
-                    // 패턴 3: 제목 뒤에 하이픈들(----) 후 숫자
                     pageMatch = trimmedLine.match(/^(.+?)[-]{2,}\s*(\d+)\s*$/);
                 }
                 if (!pageMatch) {
-                    // 패턴 4: 제목 뒤에 물결표(~~~) 후 숫자
                     pageMatch = trimmedLine.match(/^(.+?)[~]{2,}\s*(\d+)\s*$/);
                 }
                 
-                // 단독 숫자 라인은 페이지 번호가 아님 (챕터 번호일 가능성)
                 if (trimmedLine.match(/^\d+\s*$/) && trimmedLine.length < 4) {
-                    // 1, 2, 3 같은 단독 숫자는 챕터 번호로 처리
                     continue;
                 }
                 
@@ -1150,51 +994,38 @@
                     var pageNumber = parseInt(pageMatch[2]);
                     var title = pageMatch[1].trim();
                     
-                    // 제목에서 불필요한 문자 제거
-                    title = title.replace(/^[\s\d\.\-\*]+/, '').trim(); // 앞의 숫자, 점, 하이픈, 별표 제거
-                    title = title.replace(/\*\*/g, '').trim(); // ** 제거
+                    title = title.replace(/^[\s\d\.\-\*]+/, '').trim();
+                    title = title.replace(/\*\*/g, '').trim();
                     
-                    var level = 1; // 기본값
-                    var originalTitle = pageMatch[1].trim(); // 원본 제목 (레벨 판단용)
+                    var level = 1;
+                    var originalTitle = pageMatch[1].trim();
                     
-                    // 레벨 판단 로직 개선
                     if (/^\*\*.*\*\*/.test(originalTitle)) {
-                        // **텍스트** 형태는 대제목 (레벨 1)
                         level = 1;
                     } else if (/^[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ]+\./.test(originalTitle)) {
-                        // 로마숫자는 대제목 (레벨 1)
                         level = 1;
                     } else if (/^\d+\s/.test(originalTitle) && !/^\d+-\d+/.test(originalTitle)) {
-                        // "1 제목" 형태는 대제목 (레벨 1)
                         level = 1;
                     } else if (/^\d+\./.test(originalTitle) && !/^\d+-\d+\./.test(originalTitle)) {
-                        // "1. 제목" 형태는 대제목 (레벨 1)
                         level = 1;
                     } else if (/^\d+-\d+\./.test(originalTitle)) {
-                        // "1-1. 제목" 형태는 중제목 (레벨 2)
                         level = 2;
                     } else if (/^\s+\d+\./.test(originalTitle)) {
-                        // 들여쓰기된 "  1. 제목" 형태는 중제목 (레벨 2)
                         level = 2;
                     } else if (/^\d+\)/.test(originalTitle)) {
-                        // "1)" 형태는 소제목 (레벨 3)
                         level = 3;
                     } else if (/^\(\d+\)/.test(originalTitle)) {
-                        // "(1)" 형태는 소제목 (레벨 3)
                         level = 3;
                     } else if (/^\([가-힣]+\)/.test(originalTitle)) {
-                        // "(가), (나)" 형태는 세부제목 (레벨 4)
                         level = 4;
                     } else if (/^\(\s*참고\s*\)/.test(originalTitle)) {
-                        // "(참고)" 형태는 중제목 (레벨 2)
                         level = 2;
                     } else {
-                        // 들여쓰기로 레벨 판단
                         var indentLevel = (line.length - line.trimLeft().length);
                         if (indentLevel >= 4) {
-                            level = 2; // 들여쓰기가 있으면 중제목
+                            level = 2;
                         } else {
-                            level = 1; // 기본은 대제목
+                            level = 1;
                         }
                     }
                     
@@ -1206,7 +1037,7 @@
                         page: pageNumber,
                         level: level,
                         subtitles: [],
-                        originalLine: line // 디버깅용
+                        originalLine: line
                     };
                     chapters.push(currentChapter);
                 } else if (trimmedLine.startsWith('-') && currentChapter) {
@@ -1260,14 +1091,12 @@
             var html = '';
             var allSeparatorData = [];
             
-            // 카드형 간지별 요약 생성
             html += '<div class="results-grid">';
             for (var separatorType in colorPagesByType) {
                 var items = colorPagesByType[separatorType];
                 if (items.length > 0) {
                     var pageNumbers = items.map(function(item) { return item.colorPage; }).sort(function(a, b) { return a - b; });
                     
-                    // 전체 요약용 데이터 저장
                     allSeparatorData.push({
                         type: separatorType,
                         pages: pageNumbers,
@@ -1283,79 +1112,10 @@
                 }
             }
             html += '</div>';
-            
-            // 전체 요약 카드
-            html += '<div class="all-summary-card">';
-            html += '<h3>📊 전체 요약</h3>';
-            html += '<div class="all-summary-info">';
-            html += '<div class="summary-stat"><strong>전체 챕터</strong><span>' + chapters.length + '개</span></div>';
-            html += '<div class="summary-stat"><strong>추가 페이지</strong><span>' + extraPages + '페이지</span></div>';
-            html += '</div>';
-            
-            html += '<div class="all-separators">';
-            for (var i = 0; i < allSeparatorData.length; i++) {
-                var data = allSeparatorData[i];
-                html += '<div class="separator-line" id="allResult' + data.type + '">';
-                html += '<strong>' + data.type + ' 간지페이지(PDF):</strong> ' + data.pages.join(', ') + ' (총 ' + data.count + '페이지)';
-                html += '</div>';
-            }
-            html += '</div>';
-            
-            html += '<button class="copy-all-btn" id="copyAllSeparatorsBtn">📋 전체 간지 결과 복사</button>';
-            html += '</div>';
-
-            // 접기/펼치기 상세 결과
-            html += '<div class="collapsible-section">';
-            html += '<div class="collapsible-header" id="detailToggle">';
-            html += '<span>📋 상세 결과</span>';
-            html += '<span class="collapsible-arrow">▼</span>';
-            html += '</div>';
-            html += '<div class="collapsible-content" id="detailContent">';
-            
-            // 탭 네비게이션
-            html += '<div class="detail-tabs">';
-            var isFirst = true;
-            for (var separatorType in colorPagesByType) {
-                var items = colorPagesByType[separatorType];
-                if (items.length > 0) {
-                    html += '<button class="detail-tab' + (isFirst ? ' active' : '') + '" data-tab="' + separatorType + '">' + separatorType + '</button>';
-                    isFirst = false;
-                }
-            }
-            html += '</div>';
-
-            // 탭 콘텐츠
-            isFirst = true;
-            for (var separatorType in colorPagesByType) {
-                var items = colorPagesByType[separatorType];
-                if (items.length > 0) {
-                    html += '<div class="detail-tab-content' + (isFirst ? ' active' : '') + '" id="tab-' + separatorType + '">';
-                    
-                    for (var j = 0; j < items.length; j++) {
-                        var item = items[j];
-                        html += '<div class="result-item">';
-                        html += '<h3>' + item.chapterTitle + '</h3>';
-                        if (item.subtitles.length > 0) {
-                            html += '<div class="subtitle">└ ' + item.subtitles.join(', ') + '</div>';
-                        }
-                        html += '<div class="page-info">';
-                        html += '목차 기준: ' + item.tocColorPage + 'p → 실제 PDF: ' + item.colorPage + 'p';
-                        html += '</div>';
-                        html += '</div>';
-                    }
-                    
-                    html += '</div>';
-                    isFirst = false;
-                }
-            }
-            
-            html += '</div>'; // collapsible-content 닫기
-            html += '</div>'; // collapsible-section 닫기
 
             resultsContent.innerHTML = html;
             results.classList.remove('hidden');
             
-            // 이벤트 리스너 등록
             setupResultsEventListeners(allSeparatorData);
             
             setTimeout(function() {
@@ -1364,68 +1124,12 @@
         }
 
         function setupResultsEventListeners(allSeparatorData) {
-            // 접기/펼치기 이벤트
-            var detailToggle = document.getElementById('detailToggle');
-            var detailContent = document.getElementById('detailContent');
-            var arrow = detailToggle.querySelector('.collapsible-arrow');
-            
-            detailToggle.addEventListener('click', function() {
-                if (detailContent.classList.contains('expanded')) {
-                    detailContent.classList.remove('expanded');
-                    arrow.classList.remove('rotated');
-                } else {
-                    detailContent.classList.add('expanded');
-                    arrow.classList.add('rotated');
-                }
-            });
-            
-            // 탭 전환 이벤트
-            var detailTabs = document.querySelectorAll('.detail-tab');
-            for (var i = 0; i < detailTabs.length; i++) {
-                detailTabs[i].addEventListener('click', function(e) {
-                    var tabName = e.target.getAttribute('data-tab');
-                    switchDetailTab(tabName);
-                });
-            }
-            
-            // 개별 복사 버튼 이벤트
             var copySpecificBtns = document.querySelectorAll('.copy-specific-btn');
             for (var i = 0; i < copySpecificBtns.length; i++) {
                 copySpecificBtns[i].addEventListener('click', function(e) {
                     var separatorType = e.target.getAttribute('data-type');
                     copySpecificResult(separatorType, e.target);
                 });
-            }
-            
-            // 전체 복사 버튼 이벤트
-            var copyAllBtn = document.getElementById('copyAllSeparatorsBtn');
-            if (copyAllBtn) {
-                copyAllBtn.addEventListener('click', function(e) {
-                    copyAllSeparatorsResult(allSeparatorData, e.target);
-                });
-            }
-        }
-
-        function switchDetailTab(tabName) {
-            // 모든 탭 비활성화
-            var tabs = document.querySelectorAll('.detail-tab');
-            for (var i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove('active');
-            }
-            
-            // 모든 탭 콘텐츠 숨기기
-            var contents = document.querySelectorAll('.detail-tab-content');
-            for (var i = 0; i < contents.length; i++) {
-                contents[i].classList.remove('active');
-            }
-            
-            // 선택된 탭 활성화
-            var selectedTab = document.querySelector('[data-tab="' + tabName + '"]');
-            var selectedContent = document.getElementById('tab-' + tabName);
-            
-            if (selectedTab && selectedContent) {
-                selectedTab.classList.add('active');
-                selectedContent.classList.add('active');
             }
         }
 
@@ -1438,19 +1142,6 @@
             
             var pageNumbers = resultElement.textContent.trim();
             var copyText = separatorType + ' 간지페이지(PDF): ' + pageNumbers + ' (총 ' + pageNumbers.split(', ').length + '페이지)';
-            
-            copyToClipboard(copyText, button);
-        }
-
-        function copyAllSeparatorsResult(allSeparatorData, button) {
-            var copyText = '';
-            for (var i = 0; i < allSeparatorData.length; i++) {
-                var data = allSeparatorData[i];
-                copyText += data.type + ' 간지페이지(PDF): ' + data.pages.join(', ') + ' (총 ' + data.count + '페이지)';
-                if (i < allSeparatorData.length - 1) {
-                    copyText += '\n';
-                }
-            }
             
             copyToClipboard(copyText, button);
         }
@@ -1494,6 +1185,7 @@
             }
         }
 
+        // 개선된 목차 분석 함수들
         function parseTOCForAnalysis(text) {
             if (!text.trim()) return [];
             var lines = text.split('\n')
@@ -1502,7 +1194,11 @@
             
             return lines.map(function(line, index) {
                 var trimmed = line.trim();
-                var patterns = [/^(.+?)\s*[\.]{2,}\s*(\d+)$/, /^(.+?)\s{3,}(\d+)$/, /^(.+?)\s*[-~]\s*(\d+)$/];
+                var patterns = [
+                    /^(.+?)\s*[\.]{2,}\s*(\d+)$/, 
+                    /^(.+?)\s{3,}(\d+)$/, 
+                    /^(.+?)\s*[-~]\s*(\d+)$/
+                ];
                 var title = '', page = '';
                 for (var i = 0; i < patterns.length; i++) {
                     var match = trimmed.match(patterns[i]);
@@ -1555,34 +1251,127 @@
             return matrix[str2.length][str1.length];
         }
 
+        // 새로운 단어 단위 차이점 분석 함수
+        function getWordLevelDiff(oldText, newText) {
+            var oldWords = oldText.split(/(\s+)/);
+            var newWords = newText.split(/(\s+)/);
+            var result = [];
+            
+            var dp = [];
+            for (var i = 0; i <= oldWords.length; i++) {
+                dp[i] = [];
+                for (var j = 0; j <= newWords.length; j++) {
+                    dp[i][j] = 0;
+                }
+            }
+            
+            // LCS 알고리즘으로 단어 단위 차이점 계산
+            for (var i = 1; i <= oldWords.length; i++) {
+                for (var j = 1; j <= newWords.length; j++) {
+                    if (oldWords[i-1] === newWords[j-1]) {
+                        dp[i][j] = dp[i-1][j-1] + 1;
+                    } else {
+                        dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+                    }
+                }
+            }
+            
+            // 역추적으로 차이점 찾기
+            var i = oldWords.length, j = newWords.length;
+            var oldResult = [], newResult = [];
+            
+            while (i > 0 || j > 0) {
+                if (i > 0 && j > 0 && oldWords[i-1] === newWords[j-1]) {
+                    oldResult.unshift({word: oldWords[i-1], type: 'unchanged'});
+                    newResult.unshift({word: newWords[j-1], type: 'unchanged'});
+                    i--; j--;
+                } else if (i > 0 && (j === 0 || dp[i-1][j] >= dp[i][j-1])) {
+                    oldResult.unshift({word: oldWords[i-1], type: 'removed'});
+                    i--;
+                } else {
+                    newResult.unshift({word: newWords[j-1], type: 'added'});
+                    j--;
+                }
+            }
+            
+            return {old: oldResult, new: newResult};
+        }
+
+        function renderWordDiff(diffData) {
+            var html = '';
+            
+            if (diffData.old.length > 0) {
+                html += '<div class="diff-line deleted">';
+                for (var i = 0; i < diffData.old.length; i++) {
+                    var word = diffData.old[i];
+                    var className = 'word-' + (word.type === 'unchanged' ? 'unchanged' : 'removed');
+                    html += '<span class="' + className + '">' + word.word + '</span>';
+                }
+                html += '</div>';
+            }
+            
+            if (diffData.new.length > 0) {
+                html += '<div class="diff-line added">';
+                for (var i = 0; i < diffData.new.length; i++) {
+                    var word = diffData.new[i];
+                    var className = 'word-' + (word.type === 'unchanged' ? 'unchanged' : 'added');
+                    html += '<span class="' + className + '">' + word.word + '</span>';
+                }
+                html += '</div>';
+            }
+            
+            return html;
+        }
+
         function compareItems(oldItems, newItems) {
             var results = [];
             var usedOld = [];
             var usedNew = [];
+            var isWordLevel = document.getElementById('wordLevelDiff').checked;
+            var strictMode = document.getElementById('strictMatching').checked;
             
+            // 스마트 매칭: 더 관대한 임계값 사용 (기본 0.3, 엄격 모드 0.6)
+            var primaryThreshold = strictMode ? 0.6 : 0.3;
+            var secondaryThreshold = strictMode ? 0.9 : 0.7; // 정확한 매칭용
+            
+            // 1단계: 정확한 매칭
             for (var oldIndex = 0; oldIndex < oldItems.length; oldIndex++) {
-                if (oldIndex < newItems.length) {
+                for (var newIndex = 0; newIndex < newItems.length; newIndex++) {
+                    if (usedOld[oldIndex] || usedNew[newIndex]) continue;
+                    
                     var oldItem = oldItems[oldIndex];
-                    var newItem = newItems[oldIndex];
+                    var newItem = newItems[newIndex];
+                    
                     if (oldItem.title === newItem.title) {
                         usedOld[oldIndex] = true;
-                        usedNew[oldIndex] = true;
+                        usedNew[newIndex] = true;
                         var changes = [];
+                        var diffHtml = '';
+                        
                         if (oldItem.page !== newItem.page && oldItem.page && newItem.page) {
                             changes.push('페이지 ' + oldItem.page + ' → ' + newItem.page);
                         }
+                        
+                        if (oldItem.original !== newItem.original && isWordLevel) {
+                            var wordDiff = getWordLevelDiff(oldItem.original, newItem.original);
+                            diffHtml = renderWordDiff(wordDiff);
+                        }
+                        
                         results.push({ 
                             type: changes.length > 0 ? 'page-changed' : 'unchanged', 
                             oldItem: oldItem, 
                             newItem: newItem, 
                             changes: changes, 
                             severity: 'low', 
-                            position: oldIndex 
+                            position: oldIndex,
+                            diffHtml: diffHtml
                         });
+                        break;
                     }
                 }
             }
             
+            // 2단계: 높은 유사도 매칭 (정확한 매칭급)
             for (var oldIndex = 0; oldIndex < oldItems.length; oldIndex++) {
                 if (usedOld[oldIndex]) continue;
                 
@@ -1598,7 +1387,7 @@
                         newItems[newIndex].title.toLowerCase()
                     );
                     
-                    if (similarity > bestSimilarity && similarity > 0.7) {
+                    if (similarity > bestSimilarity && similarity > secondaryThreshold) {
                         bestMatch = newItems[newIndex];
                         bestSimilarity = similarity;
                         bestNewIndex = newIndex;
@@ -1608,27 +1397,107 @@
                 if (bestMatch) {
                     usedOld[oldIndex] = true;
                     usedNew[bestNewIndex] = true;
-                    var changes = ['내용 수정'];
+                    var changes = [];
+                    var diffHtml = '';
+                    
+                    // 페이지 변경사항 체크
+                    if (oldItems[oldIndex].page !== bestMatch.page && oldItems[oldIndex].page && bestMatch.page) {
+                        changes.push('페이지 ' + oldItems[oldIndex].page + ' → ' + bestMatch.page);
+                    }
+                    
+                    // 내용 변경사항 체크
+                    if (oldItems[oldIndex].original !== bestMatch.original) {
+                        changes.push('내용 수정');
+                        if (isWordLevel) {
+                            var wordDiff = getWordLevelDiff(oldItems[oldIndex].original, bestMatch.original);
+                            diffHtml = renderWordDiff(wordDiff);
+                        }
+                    }
+                    
+                    results.push({ 
+                        type: 'modified', 
+                        oldItem: oldItems[oldIndex], 
+                        newItem: bestMatch, 
+                        changes: changes.length > 0 ? changes : ['미세한 변경'], 
+                        severity: 'medium', 
+                        position: Math.min(oldIndex, bestNewIndex),
+                        diffHtml: diffHtml
+                    });
+                }
+            }
+            
+            // 3단계: 관대한 유사도 매칭 (삭제/추가를 최대한 수정으로 변환)
+            for (var oldIndex = 0; oldIndex < oldItems.length; oldIndex++) {
+                if (usedOld[oldIndex]) continue;
+                
+                var bestMatch = null;
+                var bestSimilarity = 0;
+                var bestNewIndex = -1;
+                
+                for (var newIndex = 0; newIndex < newItems.length; newIndex++) {
+                    if (usedNew[newIndex]) continue;
+                    
+                    // 다중 유사도 계산
+                    var titleSim = calculateSimilarity(
+                        oldItems[oldIndex].title.toLowerCase(), 
+                        newItems[newIndex].title.toLowerCase()
+                    );
+                    
+                    var originalSim = calculateSimilarity(
+                        oldItems[oldIndex].original.toLowerCase(), 
+                        newItems[newIndex].original.toLowerCase()
+                    );
+                    
+                    // 키워드 기반 유사도도 고려
+                    var keywordSim = calculateKeywordSimilarity(
+                        oldItems[oldIndex].original, 
+                        newItems[newIndex].original
+                    );
+                    
+                    // 최종 유사도: 가중 평균
+                    var finalSim = Math.max(titleSim, originalSim, keywordSim);
+                    
+                    if (finalSim > bestSimilarity && finalSim > primaryThreshold) {
+                        bestMatch = newItems[newIndex];
+                        bestSimilarity = finalSim;
+                        bestNewIndex = newIndex;
+                    }
+                }
+                
+                if (bestMatch) {
+                    usedOld[oldIndex] = true;
+                    usedNew[bestNewIndex] = true;
+                    var changes = ['대폭 수정'];
+                    var diffHtml = '';
+                    
+                    if (isWordLevel) {
+                        var wordDiff = getWordLevelDiff(oldItems[oldIndex].original, bestMatch.original);
+                        diffHtml = renderWordDiff(wordDiff);
+                    }
+                    
                     results.push({ 
                         type: 'modified', 
                         oldItem: oldItems[oldIndex], 
                         newItem: bestMatch, 
                         changes: changes, 
                         severity: 'medium', 
-                        position: Math.min(oldIndex, bestNewIndex) 
+                        position: Math.min(oldIndex, bestNewIndex),
+                        diffHtml: diffHtml
                     });
                 }
             }
             
+            // 4단계: 정말 남은 것들만 삭제/추가로 분류
             for (var oldIndex = 0; oldIndex < oldItems.length; oldIndex++) {
                 if (!usedOld[oldIndex]) {
                     results.push({ 
                         type: 'deleted', 
                         oldItem: oldItems[oldIndex], 
                         newItem: null, 
-                        changes: ['삭제됨'], 
+                        changes: ['완전 삭제됨'], 
                         severity: 'high', 
-                        position: oldIndex 
+                        position: oldIndex,
+                        diffHtml: ''
                     });
                 }
             }
@@ -1639,14 +1508,36 @@
                         type: 'added', 
                         oldItem: null, 
                         newItem: newItems[newIndex], 
-                        changes: ['새로 추가됨'], 
+                        changes: ['완전 새로운 항목'], 
                         severity: 'medium', 
-                        position: newIndex 
+                        position: newIndex,
+                        diffHtml: ''
                     });
                 }
             }
             
             return results.sort(function(a, b) { return a.position - b.position; });
+        }
+
+        // 키워드 기반 유사도 계산 함수 추가
+        function calculateKeywordSimilarity(text1, text2) {
+            // 공통 키워드 추출
+            var words1 = text1.toLowerCase().replace(/[^\w\s가-힣]/g, ' ').split(/\s+/).filter(function(w) { return w.length > 1; });
+            var words2 = text2.toLowerCase().replace(/[^\w\s가-힣]/g, ' ').split(/\s+/).filter(function(w) { return w.length > 1; });
+            
+            if (words1.length === 0 && words2.length === 0) return 1.0;
+            if (words1.length === 0 || words2.length === 0) return 0.0;
+            
+            var commonWords = 0;
+            var totalWords = Math.max(words1.length, words2.length);
+            
+            for (var i = 0; i < words1.length; i++) {
+                if (words2.indexOf(words1[i]) !== -1) {
+                    commonWords++;
+                }
+            }
+            
+            return commonWords / totalWords;
         }
 
         function startComparison() {
@@ -1675,7 +1566,7 @@
                     alert('분석 중 오류가 발생했습니다: ' + error.message);
                 } finally {
                     compareBtn.disabled = false;
-                    compareBtn.textContent = '🔍 목차 비교 분석 시작';
+                    compareBtn.textContent = '🔍 고급 목차 비교 분석 시작';
                 }
             }, 500);
         }
@@ -1739,10 +1630,10 @@
             
             var html = '';
             var typeLabels = {
-                'added': '추가',
+                'added': '신규',
                 'deleted': '삭제', 
                 'modified': '수정',
-                'page-changed': '페이지',
+                'page-changed': '페이지변경',
                 'unchanged': '동일'
             };
             
@@ -1758,7 +1649,12 @@
                     mainContent = '<span class="content-single deleted">' + result.oldItem.original + '</span>';
                     subContent = '삭제된 항목입니다';
                 } else if (result.type === 'modified' || result.type === 'page-changed') {
-                    mainContent = '<span class="content-before">' + result.oldItem.original + '</span><span class="content-after">' + result.newItem.original + '</span>';
+                    if (result.diffHtml) {
+                        mainContent = '<div class="diff-container">' + result.diffHtml + '</div>';
+                    } else {
+                        mainContent = '<div class="diff-line deleted">' + result.oldItem.original + '</div>';
+                        mainContent += '<div class="diff-line added">' + result.newItem.original + '</div>';
+                    }
                     subContent = result.changes ? result.changes.join(' • ') : '내용이 수정되었습니다';
                 } else {
                     mainContent = '<span class="content-single">' + result.oldItem.original + '</span>';
@@ -1800,7 +1696,7 @@
                 return;
             }
             
-            var text = '목차 비교 분석 결과 (' + filterLabel + ')\n생성일시: ' + new Date().toLocaleString('ko-KR') + '\n\n';
+            var text = '고급 목차 비교 분석 결과 (' + filterLabel + ')\n생성일시: ' + new Date().toLocaleString('ko-KR') + '\n\n';
             
             var typeLabels = { 
                 'added': '➕ 추가됨', 
@@ -1819,7 +1715,7 @@
                 text += '\n';
             }
             
-            text += '※ 편집자 수준 목차 비교 분석기에서 생성됨';
+            text += '※ 고급 목차 비교 분석기 v2.0에서 생성됨 (단어 단위 차이점 분석 포함)';
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(text).then(function() {
